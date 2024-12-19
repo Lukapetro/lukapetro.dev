@@ -1,6 +1,6 @@
-# Spitfolio
+# Portfolio
 
-My personal portfolio website built with [Astro](https://astro.build/).
+Just a chill portfolio
 
 ## 🛠️ Tech Stack
 
@@ -13,7 +13,7 @@ My personal portfolio website built with [Astro](https://astro.build/).
 
 ```bash
 # Clone the repository
-git clone https://github.com/Lukapetro/spit.dev
+git clone https://github.com/Lukapetro/lukapetro.dev
 
 # Install dependencies
 pnpm install
@@ -24,6 +24,6 @@ pnpm run dev
 
 ## 📫 Contact
 
-- Website: [spit.dev](https://www.spit.dev/)
-- GitHub: [@yourusername](https://github.com/Lukapetro)
+- Website: [lukapetro.dev](https://www.lukapetro.dev/)
+- GitHub: [@Lukapetro](https://github.com/Lukapetro)
 - LinkedIn: [Luka Petrovic](https://www.linkedin.com/in/lukapetro/)
