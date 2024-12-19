@@ -6,11 +6,10 @@ import { TerminalInput } from "./terminal-input";
 
 const Terminal: React.FC = () => {
   const { currentTheme } = useTheme();
-
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
 
-  const { input, setInput, output, handleKeyDown } = useTerminal({
+  const { input, setInput, output, handleKeyDown, path } = useTerminal({
     terminalRef,
     inputRef,
   });
@@ -35,32 +34,39 @@ const Terminal: React.FC = () => {
                  rounded-lg border shadow-terminal"
       onClick={() => inputRef.current?.focus()}
     >
-      {output.map((line, i) => (
-        <div
-          key={i}
-          className={`mb-1 whitespace-pre-wrap ${
-            line.type === "error"
-              ? "text-red-400"
-              : line.type === "success"
-              ? "text-green-400"
-              : line.type === "warning"
-              ? "text-yellow-400"
-              : line.type === "title"
-              ? "text-terminal-accent font-bold"
-              : line.type === "info"
-              ? "text-terminal-dim"
-              : "text-terminal-text"
-          }`}
-        >
-          {line.content}
-        </div>
-      ))}
-      <TerminalInput
-        input={input}
-        inputRef={inputRef}
-        onInputChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
-      />
+      <div>
+        {output.length > 0 && (
+          <div className="space-y-1 mb-4">
+            {output.map((line, i) => (
+              <div
+                key={i}
+                className={`whitespace-pre-wrap ${
+                  line.type === "error"
+                    ? "text-red-400"
+                    : line.type === "success"
+                    ? "text-green-400"
+                    : line.type === "warning"
+                    ? "text-yellow-400"
+                    : line.type === "title"
+                    ? "text-terminal-accent font-bold"
+                    : line.type === "info"
+                    ? "text-terminal-dim"
+                    : "text-terminal-text"
+                }`}
+              >
+                {line.content}
+              </div>
+            ))}
+          </div>
+        )}
+        <TerminalInput
+          input={input}
+          inputRef={inputRef}
+          onInputChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          path={path}
+        />
+      </div>
     </div>
   );
 };

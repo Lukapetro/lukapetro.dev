@@ -7,6 +7,7 @@ interface TerminalInputProps {
   inputRef: RefObject<HTMLInputElement | null>;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
+  path: { current: string[]; prompt: string };
 }
 
 export const TerminalInput: React.FC<TerminalInputProps> = ({
@@ -14,6 +15,7 @@ export const TerminalInput: React.FC<TerminalInputProps> = ({
   inputRef,
   onInputChange,
   onKeyDown,
+  path,
 }) => {
   const { currentTheme } = useTheme();
   const { getSuggestion } = useSuggestions();
@@ -24,7 +26,7 @@ export const TerminalInput: React.FC<TerminalInputProps> = ({
     <div className="terminal-input-line">
       <div className="flex items-center">
         <span style={{ color: currentTheme.colors.accent }} className="mr-2">
-          $
+          {path.prompt}$
         </span>
         <div className="relative flex-1">
           {suggestion && (

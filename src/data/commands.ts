@@ -1,34 +1,16 @@
+import { handleContactCommand } from "@/hooks/use-terminal/handle-contact-command";
+import { handleProjectCommand } from "@/hooks/use-terminal/handle-project-command";
 import { useTheme } from "@/hooks/use-theme";
 import { themes } from "@/themes/terminal-themes";
-import type { Commands, OutputLine, OutputType } from "@/types/terminal";
+import type { Commands, OutputLine } from "@/types/terminal";
+import { formatOutput } from "@/utils/terminal";
+import { easterEggs } from "./easteregges";
 
-const formatOutput = (
-  content: string,
-  type: OutputType = "default"
-): OutputLine => ({
-  content,
-  type,
-});
+const createLineSeparator = (): OutputLine =>
+  formatOutput("---------------------------", "info");
+const createEmptyLine = (): OutputLine => formatOutput(" ", "default");
 
 export const commands: Commands = {
-  help: {
-    description: "List all available commands",
-    usage: "help",
-    handler: () => {
-      const lines: OutputLine[] = [
-        formatOutput("Available Commands:", "title"),
-        ...Object.entries(commands).map(([cmd, info]) =>
-          formatOutput(`${cmd.padEnd(15)} - ${info.description}`, "info")
-        ),
-      ];
-      return lines;
-    },
-  },
-  clear: {
-    description: "Clear terminal screen",
-    usage: "clear",
-    handler: () => formatOutput("CLEAR_TERMINAL", "default"),
-  },
   about: {
     description: "About me",
     usage: "about",
@@ -37,15 +19,48 @@ export const commands: Commands = {
         formatOutput("Hey! I'm Luka👋", "title"),
         formatOutput("", "default"),
         formatOutput("Just a chill dev.", "info"),
-        formatOutput("", "default"),
+        createEmptyLine(),
         formatOutput("Tech I enjoy:", "title"),
-        formatOutput("ts • react • node • next • postgres", "info"),
-        formatOutput("", "default"),
+        formatOutput("ts • react • nextjs • trpc • tailwind • drizzle", "info"),
+        createLineSeparator(),
         formatOutput("type 'projects' for my work", "success"),
       ];
       return lines;
     },
   },
+
+  contact: {
+    description: "Display contact information",
+    usage: "contact",
+    handler: (args?: string) =>
+      handleContactCommand("contact", args?.split(" ") || []).output,
+  },
+
+  clear: {
+    description: "Clear terminal screen",
+    usage: "clear",
+    handler: () => formatOutput("CLEAR_TERMINAL", "default"),
+  },
+
+  help: {
+    description: "List available commands",
+    usage: "help",
+    handler: () => [
+      formatOutput("Available Commands:", "title"),
+      ...Object.entries(commands)
+        .filter(([_, info]) => info.description) // Only show commands with descriptions
+        .map(([cmd, info]) =>
+          formatOutput(`${cmd.padEnd(15)} - ${info.description}`, "info")
+        ),
+    ],
+  },
+
+  projects: {
+    description: "View my projects",
+    usage: "projects",
+    handler: (args?: string) => handleProjectCommand("projects").output,
+  },
+
   theme: {
     description: "Change terminal theme",
     usage: "theme [name]",
@@ -54,7 +69,7 @@ export const commands: Commands = {
       const currentThemeName = themeStore.currentTheme.name;
 
       if (!args) {
-        const lines: OutputLine[] = [
+        return [
           formatOutput("Available Themes:", "title"),
           ...Object.keys(themes).map((theme) =>
             formatOutput(
@@ -62,8 +77,11 @@ export const commands: Commands = {
               "info"
             )
           ),
+          formatOutput(
+            "Hint: Type 'theme [name]' to change the theme",
+            "success"
+          ),
         ];
-        return lines;
       }
 
       const themeName = args.toLowerCase();
@@ -75,4 +93,16 @@ export const commands: Commands = {
       return formatOutput(`Theme changed to ${themeName}`, "success");
     },
   },
+
+  ...easterEggs.reduce(
+    (acc, egg) => ({
+      ...acc,
+      [egg.trigger]: {
+        description: egg.hidden ? undefined : "Easter egg command",
+        usage: egg.trigger,
+        handler: () => egg.output,
+      },
+    }),
+    {}
+  ),
 };

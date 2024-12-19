@@ -20,3 +20,8 @@ export interface Command {
   usage: string;
   handler: (args?: string) => OutputLine | OutputLine[];
 }
+
+export type TerminalPath = {
+  current: string[];
+  prompt: string;
+};

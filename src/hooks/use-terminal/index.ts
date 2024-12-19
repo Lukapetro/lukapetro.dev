@@ -1,8 +1,11 @@
 import { commands } from "@/data/commands";
-import type { OutputLine } from "@/types/terminal";
+import type { OutputLine, TerminalPath } from "@/types/terminal";
+import { formatOutput } from "@/utils/terminal";
 import { useEffect, useState, type RefObject } from "react";
-import { useHistory } from "./use-history";
-import { useSuggestions } from "./use-suggestions";
+import { useHistory } from "../use-history";
+import { useSuggestions } from "../use-suggestions";
+import { handleContactCommand } from "./handle-contact-command";
+import { handleProjectCommand } from "./handle-project-command";
 
 interface UseTerminalProps {
   terminalRef: RefObject<HTMLDivElement | null>;
@@ -14,6 +17,10 @@ export const useTerminal = ({ terminalRef, inputRef }: UseTerminalProps) => {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [output, setOutput] = useState<OutputLine[]>([]);
+  const [path, setPath] = useState<TerminalPath>({
+    current: [],
+    prompt: "~",
+  });
   const { history, addToHistory } = useHistory();
 
   const scrollToBottom = () => {
@@ -24,15 +31,37 @@ export const useTerminal = ({ terminalRef, inputRef }: UseTerminalProps) => {
 
   const handleCommand = (commandLine: string) => {
     const [command, ...args] = commandLine.trim().toLowerCase().split(" ");
-    const cmd = commands[command];
 
+    if (command === "clear") {
+      return formatOutput("CLEAR_TERMINAL", "default");
+    }
+
+    if (path.current.length > 0) {
+      const result =
+        path.current[0] === "projects"
+          ? handleProjectCommand(command)
+          : handleContactCommand(command, args);
+
+      if (result.path) setPath({ current: result.path, prompt: result.prompt });
+      return result.output;
+    }
+
+    const cmd = commands[command];
     if (!cmd) {
-      return [
-        {
-          content: `Command not found: ${command}. Type 'help' for available commands.`,
-          type: "error" as const,
-        },
-      ];
+      return [formatOutput(`Command not found: ${command}`, "error")];
+    }
+
+    if (command === "contact") {
+      const contactResult = handleContactCommand(command, args);
+      setPath({
+        current: contactResult.path || [],
+        prompt: contactResult.prompt || "~",
+      });
+      return contactResult.output;
+    }
+
+    if (command === "projects") {
+      setPath({ current: [command], prompt: `~/${command}` });
     }
 
     return cmd.handler(args.join(" "));
@@ -102,5 +131,6 @@ export const useTerminal = ({ terminalRef, inputRef }: UseTerminalProps) => {
     setInput,
     output,
     handleKeyDown,
+    path,
   };
 };
