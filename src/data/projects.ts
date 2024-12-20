@@ -6,7 +6,7 @@ interface Project {
   link?: string;
   github?: string;
   image?: string;
-  role: string;
+  role?: string;
 }
 
 export const projects: Project[] = [
@@ -50,15 +50,14 @@ export const projects: Project[] = [
     description:
       "Built a sleek and fast portfolio website to showcase projects and skills. Used Astro for its speed, Tailwind for styling.",
     stack: ["Astro", "React", "Tailwind CSS"],
-    role: "Personal Project",
     link: "https://www.lukapetro.dev/",
+    github: "https://github.com/Lukapetro/lukapetro.dev",
   },
   {
     title: "onlyfarms.xyz",
     description:
       "Developed a full-stack airdrop farming tracker for crypto enthusiasts. Enabled users to sign up, follow farms, and complete tasks to qualify for airdrops, achieving 2,000 active users within the first month.",
     stack: ["Next.js", "tRPC", "Prisma", "Next Auth"],
-    role: "Personal Project",
     link: "https://onlyfarms.xyz",
   },
 ];

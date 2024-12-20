@@ -1,4 +1,5 @@
 import { commands } from "@/data/commands";
+import { desktopWelcome, mobileWelcome } from "@/data/welcome";
 import type { OutputLine, TerminalPath } from "@/types/terminal";
 import { formatOutput } from "@/utils/terminal";
 import { useEffect, useState, type RefObject } from "react";
@@ -17,6 +18,7 @@ export const useTerminal = ({ terminalRef, inputRef }: UseTerminalProps) => {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [output, setOutput] = useState<OutputLine[]>([]);
+
   const [path, setPath] = useState<TerminalPath>({
     current: [],
     prompt: "~",
@@ -39,10 +41,11 @@ export const useTerminal = ({ terminalRef, inputRef }: UseTerminalProps) => {
     if (path.current.length > 0) {
       const result =
         path.current[0] === "projects"
-          ? handleProjectCommand(command)
+          ? handleProjectCommand(commandLine, path.current)
           : handleContactCommand(command, args);
 
-      if (result.path) setPath({ current: result.path, prompt: result.prompt });
+      if (result.path)
+        setPath({ current: result.path, prompt: result.prompt || "~" });
       return result.output;
     }
 
@@ -61,7 +64,12 @@ export const useTerminal = ({ terminalRef, inputRef }: UseTerminalProps) => {
     }
 
     if (command === "projects") {
-      setPath({ current: [command], prompt: `~/${command}` });
+      const projectResult = handleProjectCommand("projects", []);
+      setPath({
+        current: projectResult.path || [],
+        prompt: projectResult.prompt || "~",
+      });
+      return projectResult.output;
     }
 
     return cmd.handler(args.join(" "));
@@ -125,6 +133,11 @@ export const useTerminal = ({ terminalRef, inputRef }: UseTerminalProps) => {
     inputRef.current?.focus();
     scrollToBottom();
   }, [output]);
+
+  useEffect(() => {
+    const isMobile = window.innerWidth < 640;
+    setOutput(isMobile ? mobileWelcome : desktopWelcome);
+  }, []);
 
   return {
     input,

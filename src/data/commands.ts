@@ -6,9 +6,9 @@ import type { Commands, OutputLine } from "@/types/terminal";
 import { formatOutput } from "@/utils/terminal";
 import { easterEggs } from "./easteregges";
 
-const createLineSeparator = (): OutputLine =>
+export const createLineSeparator = (): OutputLine =>
   formatOutput("---------------------------", "info");
-const createEmptyLine = (): OutputLine => formatOutput(" ", "default");
+export const createEmptyLine = (): OutputLine => formatOutput(" ", "default");
 
 export const commands: Commands = {
   about: {
@@ -58,7 +58,7 @@ export const commands: Commands = {
   projects: {
     description: "View my projects",
     usage: "projects",
-    handler: (args?: string) => handleProjectCommand("projects").output,
+    handler: (args?: string) => handleProjectCommand("projects", []).output,
   },
 
   theme: {

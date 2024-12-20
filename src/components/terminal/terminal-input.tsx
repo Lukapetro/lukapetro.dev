@@ -19,7 +19,6 @@ export const TerminalInput: React.FC<TerminalInputProps> = ({
 }) => {
   const { currentTheme } = useTheme();
   const { getSuggestion } = useSuggestions();
-
   const suggestion = getSuggestion(input);
 
   return (
@@ -30,11 +29,11 @@ export const TerminalInput: React.FC<TerminalInputProps> = ({
         </span>
         <div className="relative flex-1">
           {suggestion && (
-            <div className="absolute inset-0 flex items-center pointer-events-none">
-              <span className="text-terminal-text">{input}</span>
+            <div className="absolute inset-0 flex items-center pointer-events-none select-none">
+              <span className="invisible">{input}</span>
               <span
                 style={{ color: currentTheme.colors.dim }}
-                className="opacity-50"
+                className="opacity-50 whitespace-pre"
               >
                 {suggestion.slice(input.length)}
               </span>
@@ -52,6 +51,10 @@ export const TerminalInput: React.FC<TerminalInputProps> = ({
                      focus:ring-0 focus:outline-none relative z-10"
             autoFocus
             aria-label="terminal input"
+            autoCapitalize="none"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck="false"
           />
         </div>
       </div>
